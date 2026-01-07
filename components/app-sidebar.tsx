@@ -10,6 +10,7 @@ import {
   ChevronDown,
   StickyNote,
   Code2,
+  Zap
 } from "lucide-react";
 import {
   Sidebar,
@@ -39,6 +40,7 @@ const items = [
   { title: "Vault", url: "/dashboard/vault", icon: Search },
   { title: "Finances", url: "/dashboard/finances", icon: Wallet },
   { title: "Office Attendance", url: "/dashboard/attendence", icon: Calendar },
+  { title: "Daily Routine", url: "/dashboard/routine", icon: Zap },
 ];
 
 export function AppSidebar() {
