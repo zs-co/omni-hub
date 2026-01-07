@@ -14,7 +14,7 @@ import {
   Code2,
   Zap,
   Settings2,
-  BookOpen
+  BookOpen,
 } from "lucide-react";
 import {
   Sidebar,
@@ -84,6 +84,7 @@ export function AppSidebar() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    router.refresh();
     router.push("/login");
   };
 

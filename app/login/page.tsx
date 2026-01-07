@@ -32,8 +32,8 @@ export default function LoginPage() {
     if (error) {
       toast.error(`Error: ${error.message}`);
     } else {
-      router.push("/dashboard");
       router.refresh();
+      router.push("/dashboard");
     }
     setLoading(false);
   };
