@@ -35,6 +35,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function DashboardHome() {
   const supabase = createClient();
@@ -54,57 +55,50 @@ export default function DashboardHome() {
 
   useEffect(() => {
     const fetchAllData = async () => {
-      setLoading(true);
+      // 1. Immediate Layout Load (Prevents UI jump)
+      const savedLayout = localStorage.getItem("dashboard-layout");
+      if (savedLayout) setVisibleModules(JSON.parse(savedLayout));
+
       const {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) return;
 
-      // 1. Fetch Layout from LocalStorage immediately
-      const savedLayout = localStorage.getItem("dashboard-layout");
-      if (savedLayout) setVisibleModules(JSON.parse(savedLayout));
-
-      // 2. Fetch Attendance & Balances
-      const { data: att } = await supabase.from("attendance").select("*");
-      const { data: bal } = await supabase
-        .from("leave_balances")
-        .select("*")
-        .eq("user_id", user?.id)
-        .single();
-
-      // 3. Fetch Routine
       const todayStr = format(new Date(), "yyyy-MM-dd");
-      const { data: t } = await supabase.from("routine_tasks").select("*");
-      const { data: l } = await supabase
-        .from("routine_logs")
-        .select("task_id")
-        .eq("completed_at", todayStr);
+      const weekAgo = subDays(new Date(), 7).toISOString();
 
-      // 4. Fetch Real Finance Data
-      const { data: fin } = await supabase
-        .from("finances")
-        .select("amount, created_at")
-        .gte("created_at", subDays(new Date(), 7).toISOString())
-        .order("created_at", { ascending: true });
+      // 2. PARALLEL FETCHING (The Speed Booster)
+      // All these requests fire at once instead of waiting for each other
+      const [attRes, balRes, taskRes, logRes, finRes] = await Promise.all([
+        supabase.from("attendance").select("*"),
+        supabase
+          .from("leave_balances")
+          .select("*")
+          .eq("user_id", user.id)
+          .single(),
+        supabase.from("routine_tasks").select("*"),
+        supabase
+          .from("routine_logs")
+          .select("task_id")
+          .eq("completed_at", todayStr),
+        supabase
+          .from("finances")
+          .select("amount, created_at")
+          .gte("created_at", weekAgo)
+          .order("created_at", { ascending: true }),
+      ]);
 
-      if (att) setAttendance(att);
-      if (bal) setBalances(bal);
-      if (t) setTasks(t);
-      if (l) setLogs(l.map((i) => i.task_id));
-      if (fin) setFinanceData(fin);
+      // 3. Batch Updates (Prevents multiple re-renders)
+      if (attRes.data) setAttendance(attRes.data);
+      if (balRes.data) setBalances(balRes.data);
+      if (taskRes.data) setTasks(taskRes.data);
+      if (logRes.data) setLogs(logRes.data.map((i: any) => i.task_id));
+      if (finRes.data) setFinanceData(finRes.data);
 
       setLoading(false);
     };
+
     fetchAllData();
-
-    // Listener for Sidebar changes
-    const handleStorageChange = () => {
-      const savedLayout = localStorage.getItem("dashboard-layout");
-      if (savedLayout) setVisibleModules(JSON.parse(savedLayout));
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   const chartData = useMemo(() => {
@@ -145,12 +139,26 @@ export default function DashboardHome() {
   const routineProgress =
     tasks.length > 0 ? Math.round((logs.length / tasks.length) * 100) : 0;
 
-  if (loading)
+  if (loading) {
     return (
-      <div className="h-[80vh] flex items-center justify-center">
-        <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+        {/* Finance Graph Skeleton */}
+        <div className="md:col-span-4 space-y-3">
+          <Skeleton className="h-[300px] w-full rounded-3xl" />
+        </div>
+
+        {/* Attendance Skeleton */}
+        <div className="md:col-span-2 space-y-3">
+          <Skeleton className="h-[300px] w-full rounded-3xl" />
+        </div>
+
+        {/* Routine Skeleton */}
+        <div className="md:col-span-6">
+          <Skeleton className="h-[120px] w-full rounded-3xl" />
+        </div>
       </div>
     );
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-6 gap-4 animate-in fade-in duration-500">

@@ -104,7 +104,7 @@ export function AppSidebar() {
     },
     {
       title: "Office Attendance",
-      url: "/dashboard/attendence",
+      url: "/dashboard/attendance",
       icon: Calendar,
       visible: visibleModules.attendance,
     },

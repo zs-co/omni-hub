@@ -1,5 +1,6 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import PWARefresh from "@/components/PWARefresh";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -11,7 +12,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <SidebarTrigger />
           <h2 className="text-sm font-semibold">Dashboard</h2>
         </header>
-        <div className="p-4 md:p-8">{children}</div>
+        <PWARefresh>
+          {" "}
+          <div className="p-4 md:p-8">{children}</div>{" "}
+        </PWARefresh>
       </main>
     </SidebarProvider>
   );
