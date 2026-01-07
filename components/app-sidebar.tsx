@@ -50,7 +50,7 @@ export function AppSidebar() {
     await supabase.auth.signOut();
     router.push("/login");
   };
-
+  // Add a settings icon for displaying the selected modules
   return (
     <Sidebar collapsible="icon">
       <SidebarContent>
@@ -90,21 +90,21 @@ export function AppSidebar() {
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton
-                      tooltip="Brain"
+                      tooltip="Quick Notes & Snippets"
                       className={
-                        pathname.includes("/dashboard/brain")
+                        pathname.includes("/dashboard/quick-notes")
                           ? "bg-slate-200"
                           : ""
                       }
                     >
                       <Brain
                         className={
-                          pathname.includes("/dashboard/brain")
+                          pathname.includes("/dashboard/quick-notes")
                             ? "text-black"
                             : ""
                         }
                       />
-                      <span>Brain</span>
+                      <span>Quick Notes</span>
                       <ChevronDown className="ml-auto w-4 h-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
                     </SidebarMenuButton>
                   </CollapsibleTrigger>
@@ -113,20 +113,22 @@ export function AppSidebar() {
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton
                           asChild
-                          isActive={pathname === "/dashboard/brain/notes"}
+                          isActive={pathname === "/dashboard/quick-notes/notes"}
                         >
-                          <Link href="/dashboard/brain/notes">
+                          <Link href="/dashboard/quick-notes/notes">
                             <StickyNote className="w-4 h-4" />
-                            <span>Quick Notes</span>
+                            <span>Notes</span>
                           </Link>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton
                           asChild
-                          isActive={pathname === "/dashboard/brain/snippets"}
+                          isActive={
+                            pathname === "/dashboard/quick-notes/snippets"
+                          }
                         >
-                          <Link href="/dashboard/brain/snippets">
+                          <Link href="/dashboard/quick-notes/snippets">
                             <Code2 className="w-4 h-4" />
                             <span>Snippets</span>
                           </Link>
