@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -12,9 +12,23 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// 1. Keep SEO and general info here
 export const metadata: Metadata = {
   title: "Omni Hub",
-  description: "Personal productivity and management hub",
+  description: "Your personal command center",
+  manifest: "/manifest.json",
+  icons: {
+    apple: "/icons/apple-touch-icon.png", // This handles Mac and iOS
+  },
+};
+
+// 2. Move theme and viewport here
+export const viewport: Viewport = {
+  themeColor: "#ffffff",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false, // Good for PWA feel
 };
 
 export default function RootLayout({
