@@ -27,12 +27,21 @@ import { cn } from "@/lib/utils";
 
 const COLORS = [
   { name: "Default", class: "bg-white border-slate-200" },
-  { name: "Yellow", class: "bg-yellow-50 border-yellow-200 text-yellow-900" },
-  { name: "Blue", class: "bg-blue-50 border-blue-200 text-blue-900" },
-  { name: "Green", class: "bg-emerald-50 border-emerald-200 text-emerald-900" },
-  { name: "Rose", class: "bg-rose-50 border-rose-200 text-rose-900" },
+  { name: "yellow", class: "bg-yellow-50 border-yellow-200 text-yellow-900" },
+  { name: "blue", class: "bg-blue-50 border-blue-200 text-blue-900" },
+  { name: "green", class: "bg-emerald-50 border-emerald-200 text-emerald-900" },
+  { name: "rose", class: "bg-rose-50 border-rose-200 text-rose-900" },
 ];
 
+
+const colorMap: Record<string, string> = {
+  red: "bg-red-400",
+  blue: "bg-blue-400",
+  green: "bg-green-400",
+  yellow: "bg-yellow-400",
+  purple: "bg-purple-400",
+  // add more as needed
+};
 export default function QuickNotesPage() {
   const supabase = createClient();
   const [notes, setNotes] = useState<any[]>([]);
@@ -171,8 +180,9 @@ export default function QuickNotesPage() {
               key={note.id}
               className={cn(
                 "break-inside-avoid shadow-sm transition-all hover:shadow-md",
-                note.color_tag
+                colorMap[note.color_tag] || "bg-gray-400"
               )}
+              style={{background: `light${note.color_tag}`}}
             >
               <CardContent className="pt-6">
                 <p className="text-sm whitespace-pre-wrap leading-relaxed">
